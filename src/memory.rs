@@ -1,19 +1,18 @@
 use std::ffi::c_void;
 use std::mem::size_of;
-use windows_sys::Win32::Foundation::{CloseHandle, GetLastError, HANDLE, HMODULE, LUID};
+use windows_sys::Win32::Foundation::{CloseHandle, HANDLE, HMODULE, LUID};
 use windows_sys::Win32::Security::{
     AdjustTokenPrivileges, LookupPrivilegeValueW, LUID_AND_ATTRIBUTES, TOKEN_ADJUST_PRIVILEGES,
     TOKEN_PRIVILEGES, TOKEN_QUERY,
 };
-use windows_sys::Win32::System::Memory::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
+use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress};
 use windows_sys::Win32::System::ProcessStatus::{GetPerformanceInfo, PERFORMANCE_INFORMATION};
-use windows_sys::Win32::System::SystemInformation::GetModuleHandleA;
+use windows_sys::Win32::System::SystemInformation::{GlobalMemoryStatusEx, MEMORYSTATUSEX};
 use windows_sys::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
 
 // Undocumented Native NT constants (tương tự mã nguồn Mem Reduct)
 const SYSTEM_MEMORY_LIST_INFORMATION: u32 = 80;
 const SYSTEM_FILE_CACHE_INFORMATION_EX: u32 = 21;
-const SYSTEM_COMBINE_PHYSICAL_MEMORY_INFORMATION: u32 = 130;
 
 // Các lệnh của SystemMemoryListInformation
 const MEMORY_EMPTY_WORKING_SETS: u32 = 2;
@@ -99,10 +98,7 @@ fn get_nt_set_system_information() -> Option<NtSetSystemInformationFn> {
         if ntdll.is_null() {
             return None;
         }
-        let proc = windows_sys::Win32::System::LibraryLoader::GetProcAddress(
-            ntdll,
-            b"NtSetSystemInformation\0".as_ptr(),
-        );
+        let proc = GetProcAddress(ntdll, b"NtSetSystemInformation\0".as_ptr());
         proc.map(|p| std::mem::transmute::<_, NtSetSystemInformationFn>(p))
     }
 }

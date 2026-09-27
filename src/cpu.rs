@@ -1,21 +1,14 @@
-use std::ffi::c_void;
 use windows_sys::Win32::Foundation::{CloseHandle, HANDLE, HMODULE};
 use windows_sys::Win32::Media::{timeBeginPeriod, timeEndPeriod};
-use windows_sys::Win32::System::SystemInformation::GetModuleHandleA;
+use windows_sys::Win32::System::LibraryLoader::{GetModuleHandleA, GetProcAddress};
 use windows_sys::Win32::System::Threading::{
     OpenProcess, SetPriorityClass, SetProcessAffinityMask,
-    HIGH_PRIORITY_CLASS, NORMAL_PRIORITY_CLASS, PROCESS_SET_INFORMATION,
+    HIGH_PRIORITY_CLASS, PROCESS_SET_INFORMATION,
 };
 
 type NtSetTimerResolutionFn = unsafe extern "system" fn(
     desired_resolution: u32,
     set_resolution: u8,
-    current_resolution: *mut u32,
-) -> i32;
-
-type NtQueryTimerResolutionFn = unsafe extern "system" fn(
-    maximum_resolution: *mut u32,
-    minimum_resolution: *mut u32,
     current_resolution: *mut u32,
 ) -> i32;
 
@@ -26,10 +19,7 @@ pub fn set_timer_resolution_05ms() -> Result<f32, String> {
     unsafe {
         let ntdll: HMODULE = GetModuleHandleA(b"ntdll.dll\0".as_ptr());
         if !ntdll.is_null() {
-            let proc = windows_sys::Win32::System::LibraryLoader::GetProcAddress(
-                ntdll,
-                b"NtSetTimerResolution\0".as_ptr(),
-            );
+            let proc = GetProcAddress(ntdll, b"NtSetTimerResolution\0".as_ptr());
             if let Some(func_ptr) = proc {
                 let func = std::mem::transmute::<_, NtSetTimerResolutionFn>(func_ptr);
                 let desired_100ns = 5000; // 5000 * 100ns = 0.5ms
@@ -58,10 +48,7 @@ pub fn restore_timer_resolution() {
         if TIMER_BOOSTED {
             let ntdll: HMODULE = GetModuleHandleA(b"ntdll.dll\0".as_ptr());
             if !ntdll.is_null() {
-                let proc = windows_sys::Win32::System::LibraryLoader::GetProcAddress(
-                    ntdll,
-                    b"NtSetTimerResolution\0".as_ptr(),
-                );
+                let proc = GetProcAddress(ntdll, b"NtSetTimerResolution\0".as_ptr());
                 if let Some(func_ptr) = proc {
                     let func = std::mem::transmute::<_, NtSetTimerResolutionFn>(func_ptr);
                     let mut current_res = 0u32;

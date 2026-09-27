@@ -188,7 +188,7 @@ fn main() {
     }
 }
 
-fn print_banner(config: &AppConfig) {
+fn print_banner(_config: &AppConfig) {
     println!("{}", "=================================================================".bright_blue());
     println!("{}", "       MemScript-AI v1.0 - Windows Hardware & Memory Optimizer   ".bold().green());
     println!("{}", "   Powered by Rust Native Engine + xKiro AI (Qwen3.5-Omni-Flash) ".cyan());
