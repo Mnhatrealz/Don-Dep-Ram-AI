@@ -84,11 +84,11 @@ Yêu cầu:
             model: self.config.ai.model.clone(),
             messages: vec![
                 ChatMessage {
-                    role: "system".to_string>,
+                    role: "system".to_string(),
                     content: system_prompt,
                 },
                 ChatMessage {
-                    role: "user".to_string>,
+                    role: "user".to_string(),
                     content: user_prompt.to_string(),
                 },
             ],
