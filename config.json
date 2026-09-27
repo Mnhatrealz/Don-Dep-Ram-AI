@@ -1,0 +1,18 @@
+{
+  "ai": {
+    "api_key": "sk-xt-6326e90bccc399cd6cf674b37ac9f3eef99ff46740e067bf",
+    "base_url": "https://api.xkiro.com/v1",
+    "model": "qwen/qwen3.5-omni-flash:free",
+    "temperature": 0.3,
+    "max_tokens": 1024
+  },
+  "automation": {
+    "auto_clean_enabled": true,
+    "ram_threshold_percent": 85,
+    "check_interval_seconds": 15,
+    "timer_resolution_boost": true,
+    "clean_standby": true,
+    "clean_workingset": true,
+    "clean_temp_files": true
+  }
+}
