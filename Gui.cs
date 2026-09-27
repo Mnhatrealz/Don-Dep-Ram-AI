@@ -73,9 +73,17 @@ namespace MemScriptAI
         [STAThread]
         public static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainForm());
+            try
+            {
+                Application.EnableVisualStyles();
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new MainForm());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Lỗi khởi động: " + ex.Message, "MemScript-AI Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                File.WriteAllText("gui_error.log", ex.ToString());
+            }
         }
 
         public MainForm()
